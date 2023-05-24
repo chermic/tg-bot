@@ -16,28 +16,36 @@ config();
 //   bot.launch();
 // };
 
+const port = Number(process.env.PORT) ?? 443;
+
 const fastify = Fastify({ logger: true });
 
-const baseUrl = "https://api.telegram.com";
-const telegramUrl = new URL(`bot${process.env.BOT_TOKEN}/sendMessage`, baseUrl);
+const baseTgUrl = "https://api.telegram.com";
+const telegramUrl = new URL(`/bot${process.env.BOT_TOKEN}/sendMessage`, baseTgUrl);
 const jokeUrl = "https://v2.jokeapi.dev/joke/Programming?type=single";
 
 fastify.post("/new-message", async (request, response) => {
-  const { message } = request.body as { message: any };
-  console.log({ message });
-  const text = message?.text?.toLowerCase()?.trim();
-  const chatId = message?.chat?.id;
+  try {
+    const message = (request.body as { message?: any })?.message;
+    const text = message?.text?.toLowerCase()?.trim();
+    const chatId = message?.chat?.id;
 
-  await fetch(telegramUrl, {
-    method: "POST",
-    body: JSON.stringify({ chat_id: chatId, text }),
-  });
+    const tgResponse = await fetch(telegramUrl, {
+      method: "POST",
+      body: JSON.stringify({ chat_id: chatId, text }),
+    });
+    console.log('🚀 ~ file: index.ts:38 ~ fastify.post ~ tgResponse:', tgResponse);
 
-  response.type("application/json").code(200);
-  return { status: "ok" };
+    response.type("application/json").code(200);
+    return { ok: true };
+  } catch (error) {
+    console.log('🚀 ~ file: index.ts:43 ~ fastify.post ~ error:', error);
+    response.type("application/json").code(400);
+    return { ok: false, error: error instanceof Error ? error.message : null };
+  }
 });
 
-fastify.listen({ port: 3000 }, (error, address) => {
+fastify.listen({ port }, (error, address) => {
   if (error) {
     throw error;
   }
