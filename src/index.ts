@@ -16,13 +16,23 @@ config();
 //   bot.launch();
 // };
 
-const port = Number(process.env.PORT) ?? 443;
+const port =
+  typeof process.env.PORT === "string" && process.env.PORT?.length > 0
+    ? Number.parseInt(process.env.PORT, 10)
+    : 3000;
 
 const fastify = Fastify({ logger: true });
 
 const baseTgUrl = "https://api.telegram.com";
-const telegramUrl = new URL(`/bot${process.env.BOT_TOKEN}/sendMessage`, baseTgUrl);
+const telegramUrl = new URL(
+  `/bot${process.env.BOT_TOKEN}/sendMessage`,
+  baseTgUrl
+);
 const jokeUrl = "https://v2.jokeapi.dev/joke/Programming?type=single";
+
+fastify.get("/", (request, response) => {
+  response.send({ ok: true });
+});
 
 fastify.post("/new-message", async (request, response) => {
   try {
@@ -34,12 +44,15 @@ fastify.post("/new-message", async (request, response) => {
       method: "POST",
       body: JSON.stringify({ chat_id: chatId, text }),
     });
-    console.log('🚀 ~ file: index.ts:38 ~ fastify.post ~ tgResponse:', tgResponse);
+    console.log(
+      "🚀 ~ file: index.ts:38 ~ fastify.post ~ tgResponse:",
+      tgResponse
+    );
 
     response.type("application/json").code(200);
     return { ok: true };
   } catch (error) {
-    console.log('🚀 ~ file: index.ts:43 ~ fastify.post ~ error:', error);
+    console.log("🚀 ~ file: index.ts:43 ~ fastify.post ~ error:", error);
     response.type("application/json").code(400);
     return { ok: false, error: error instanceof Error ? error.message : null };
   }
