@@ -36,7 +36,7 @@ fastify.get("/", (request, response) => {
 
 fastify.post("/new-message", async (request, response) => {
   try {
-    const message = (request.body as { message?: any })?.message;
+    const message = (request.body)?.message;
     const text = message?.text?.toLowerCase()?.trim();
     const chatId = message?.chat?.id;
 
