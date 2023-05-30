@@ -28,6 +28,7 @@ const telegramUrl = new URL(
   `/bot${process.env.BOT_TOKEN}/sendMessage`,
   baseTgUrl
 );
+console.log('🚀 ~ file: index.js:31 ~ telegramUrl:', telegramUrl);
 const jokeUrl = "https://v2.jokeapi.dev/joke/Programming?type=single";
 
 fastify.get("/", (request, response) => {
@@ -62,4 +63,6 @@ fastify.listen({ port }, (error, address) => {
   if (error) {
     throw error;
   }
+
+  console.log(`Server is listening on ${port}`);
 });
