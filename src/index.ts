@@ -1,4 +1,3 @@
-import Fastify from "fastify";
 import express from "express";
 import { Telegraf } from "telegraf";
 import { message } from "telegraf/filters";
@@ -23,8 +22,6 @@ const port =
   typeof process.env.PORT === "string" && process.env.PORT?.length > 0
     ? Number.parseInt(process.env.PORT, 10)
     : 3000;
-
-const fastify = Fastify({ logger: true });
 
 const baseTgUrl = "https://api.telegram.com";
 const telegramUrl = new URL(
@@ -53,13 +50,12 @@ app.post("/new-message", async (request, response) => {
     //   tgResponse
     // );
     const jokeResponse = await fetch(jokeUrl);
-    jokeResponse.json().then(console.log)
+    jokeResponse.json().then(console.log);
 
     response.status(200).json({ ok: true });
   } catch (error) {
     console.log("🚀 ~ file: index.ts:43 ~ fastify.post ~ error:", error);
     response.status(400).json({ ok: false, error });
-    // return { ok: false, error: error instanceof Error ? error.message : null };
   }
 });
 
